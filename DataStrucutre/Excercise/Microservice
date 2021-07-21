@@ -1,0 +1,256 @@
+
+Q1. How will you go about choosing REST vs Messaging for Microservices?
+A1. Microservices can be invoked both synchronously and asynchronously. Microservices must be organized around business functionalities like Customers, Orders, Invoices, Products, etc.
+
+Synchronous Request/Response & public facing APIs
+REST is a great fit for request/response interactions as HTTP(S) network protocol itself Request/Response base. REST are interoperable with every programming language and the message payload can be easily documented using tools such as Swagger, which is an OpenAPI Specification.
+
+Asynchronous, Looser coupling & scalable
+RESTful/synchronous Microservices have a number of shortcomings like tight coupling, blocking calls, less scalable, and less fault tolerant. This is where the asynchronous messaging comes to the rescue.
+
+1. Tight Coupling: Each Microservice should have its own databases and Data MUST not be shared via a database. This rule removes a common cause that leads to tight coupling between services. For example, if two services share the same database, the second service will break if the first service has changed the database schema. Then teams will have to talk to each other before changing databases, leading to delays, taking us backward.
+
+Q. What if both services need to share the same data?
+A. You can replicate the data via messaging, and one service will be the source of truth where update takes place and the other service just reads the data as shown below. The data can be synchronised asynchronously via a messaging queue.
+
+
+Microservice should share db
+
+Q. What if both services need to update the data?
+A. Either merge both the services or use transactions. Distributed transactions can be expensive, an you can use a service compensation. For example, if the second update fails, compensate the first update that has succeeded.
+
+For example, if you are shipping a product, first deduct the money, and then ship the product. If the shipping of the product failed, then refund the money.
+
+2. Blocking calls: When invoking a REST based Microservice, your service will be blocked waiting for a response for certain long running services. This can adversely impact application performance as this blocked thread could be processing other requests. Asynchronous messaging based client APIs can send a request to messaging queue or topic and process another request instead of waiting for a response.
+
+3. Scalability: If you need to scale your Microservices due to increased demand, the ability scale out is one of the key advantages of Microservices architecture. Event driven architecture and messaging make it much easier for the Microservices to scale since they’re decoupled and do not block.
+
+4. Resiliency (i.e Fault tolerant): In REST based Microservices, the error handling, service retry & service timeout logic need to be incorporated in the code. This tightly couples the services.
+
+Messaging platforms offer guaranteed delivery, which is very helpful in the event of failures where the messages will not be lost. In the case of service failures the messaging systems allow other healthy services to continue processing as they are not blocked on the failed service. Once the failed service is restarted, it will start processing the data that had been accumulated in the messaging queues during the downtime. This makes the failed system eventually consistent. This makes your code simpler & cleaner without any complex error handling & retry logic.
+
+
+Microservices – Event Driven (Kafka)
+
+Q2. How do you handle Microservices security?
+A2. Microservices and web applications must be stateless and decoupled so that they can be easily deployed and scaled. So, Token based security (i.e. JWT – JSON Web Token) is used. The resource servers hosting the Microservices don’t have to maintain any state with the token based security. Authorization server (i.e. STS – Secured Token Service) validates the credentials and issue a token to the client whereas the client sends the token back in the request header and the STS server uses it to verify the authenticity and access of the request. CORS (i.e. Cross-origin resource sharing) can be enabled for the cross domain service calls.
+
+
+Microservices – Security
+
+Q. Why token based security?
+A. Unlike the cookie based security, which is stateful, the token based security is stateless. The token based security is scalable & decoupled from the service providers. The JWT (i.e. JSON Web Token) contains all the information to check its validity, user’s identity and access details. OAUth 2.0 and OpenID use them to exchange information between the parties. JWT is simpler than SAML 2.0 and supported by all devices and it is more powerful than SWT(Simple Web Token). JWT can be encrypted for tamper proof.
+
+Q. What is OAuth 2?
+A. OAuth2 is an authorization protocol designed to support a variety of different client types, which access REST APIs. This includes both applications running on web servers within the enterprise calling out to the cloud as well as applications running on mobile devices.
+
+Q3. Why is ESB considered bad in Microservices Architecture?
+A3. In SOA composition of services was handled via centralized ESB (i.e. Enterprise Service Bus).
+
+ESB and BPM
+ESB and BPM
+
+Microservices discourage the use of ESB as ESB can not only become a single point of failure, but also a bottleneck for changes as all teams will have to coordinate with the ESB team for all rollouts. This will increase inter dependence among teams. The main focus of the microservices architecture is to enable autonomous operation not just for the service, but also for its team as well.
+
+In Microservices architecture, point-to-point communication of services is used to via synchronous or asynchronous communication. An API gateway is used to aggregate the APIs for the client. This helps with the two ultimate goals of Microservices
+
+1) Low coupling
+2) High cohesion
+
+to achieve
+
+1) continuous deployment
+2) fine-grained scaling (i.e. horizontal scaling via distributed systems)
+3) rapid technology adaptation
+4) reusability
+
+at the expense of
+
+1) more complexity in terms of architecture/development & monitoring
+
+
+Microservice – API Gateway
+
+Q4. What is a “Backends for frontends (i.e BFF)” pattern?
+A4. This is a variation of the API Gateway pattern where it defines a separate API gateway for each kind of client as in mobile client, web client, 3rd party application, etc.
+
+Microservices backends for frontends (BFF)
+Microservices backends for frontends (BFF) [source: https://tsh.io/blog/design-patterns-in-microservices-api-gateway-bff-and-more/]
+
+Q5. What is the purpose of an API Gateway pattern?
+A5.
+
+API Gateway benefits
+API Gateway benefits
+
+1) Prevents exposing internal concerns to external clients. It also hides service discovery and versioning details from the client by providing a single point of entry for all of your microservices.
+
+2) As an additional layer of protection from attacks such as SQL Injection, XML Parser exploits, and denial-of-service (DoS) attacks.
+
+3) Protocol translation where client to API Gateway is REST and the API Gateway to microservices endponts can be REST, gRPC, AMQP, Web Socket, etc.
+
+4) Client specific APIs.
+
+5) Decreases complexities by providing common concerns like authentication, auditing, logging, load balancing, etc. This allows Microservices to focus on task at hand.
+
+6) Allows you to mock your services to integration test your services & validate any design requirements.
+
+7) To prevent your API from being overwhelmed by too many requests, API Gateway can throttle requests to your API.
+
+Q6. What are the drawbacks of an API Gateway?
+A6.
+
+1) Increases the complexity of the deployment as it requires more orchestration & management. Routing logic must be managed during deployment.
+
+2) It can limit high availability & scalability, and even become a single point of failure if not architected correctly.
+
+Q7. How will you go about implementing an API Gatway pattern in your Spring application?
+A7. Spring Cloud with Zuul server from Netflix. Learn more at Spring Cloud routing with Netflix’s Zuul.
+
+Q8. What is the key consideration for Microservices to be deployed independently?
+A8. If Microservices are to be released independently, you must handle the below scenario where
+
+Scenario 1:
+
+“Microservice 2 was upgraded from version V1 to V2, the Microservice 1, which used to send a request to V1 will now have to send to V2.”
+
+Scenario 2:
+
+“Microservice 2 was down graded from version V2 to V1, the Microservice 3, which used to send a request to V2 will now have to send to V1.”
+
+1) Where possible, add optional parameters and never rename or remove existing parameters.
+
+2) When upgrades are more complex, communicate upgrades to other consumers. Write Pact and Contract Testing as part of the complete testing strategy. Use test cases for forward & backward compatibility.
+
+Q. What is contract testing?
+A. The microservices architecture involves a lot of intercommunication between microservices. Those interactions are based on a contract, which consists of expectations of input and output data as well as preconditions and postconditions for each service that consumes data from another service that produces data.
+
+Spring Cloud Contract
+Spring Cloud Contract [https://cloud.spring.io/spring-cloud-contract/2.0.x/single/spring-cloud-contract.html#_spring_cloud_contract]
+
+If you want to test the all above services you could do one of two things:
+
+1) Deploy all microservices and perform end-to-end tests, which can be complex, hard to debug & time consuming as you have to deploy 6 microservices, a couple of databases, etc.
+
+2) Mock other microservices in unit/integration tests, which has the issue of implementor of the service creates stubs that might have nothing to do with reality, and passing tests can fail in production
+
+To solve the aforementioned issues, Spring Cloud Contract Verifier with Stub Runner was created. The main idea is to give you very fast feedback, without the need to set up the whole world of microservices. If you work on stubs, then the only applications you need are those that your application directly uses.
+
+Spring Cloud Contract Verifier
+Spring Cloud Contract Verifier [https://cloud.spring.io/spring-cloud-contract/2.0.x/single/spring-cloud-contract.html#_spring_cloud_contract]
+
+Spring Cloud Contract is a project that, simply put, helps us write Consumer-Driven Contracts (CDC). This ensures the contract between a Producer and a Consumer, in a distributed system – for both HTTP-based and message-based interactions.
+
+Contract testing is a method to verify integration between two applications independently in order to test what has been passed and see if what is returned matches with the “contract”.
+
+Pact is a family of test frameworks that provide support for consumer-driven contract testing with implementations in JVM languages, NET, JavaScript, Go, Python, etc.
+
+3) Service & Semantic monitoring. Semantic monitoring combines monitoring of the entire application along with automated tests. This allows an issue to be detected quicker, and allows faster isolation and triaging.
+
+Reports and Dashboards are used in Microservices:
+— Find out which Microservices expose what resources.
+
+— Find out which services are impacted whenever changes in a service occur.
+
+— As a documentation identifying services & versions. E.g. Swagger-UI using the SpringFox library.
+
+4) Where possible, Microservices should not call each other and all connection should be done via API gateway or a message bus. Instead of Microservice 1 directly calling Microservice 2, the API gateway present the results of the Microservice 2 to Microservice 1.
+
+Q9. How do we discover services in Microservices?
+A9. Each microservice will not only be hosted on multiple hosts in a distributed system, but also current instances may go down & new instances can be added. For example, the “billing microservice” might be deployed on 3 AWS EC2 hosts & “product microservice” might be deployed on 2 AWS EC2 hosts. It can be deployed to more hosts as the load increases.
+
+Hence, it is very dynamic in nature & it is a NO for hard coding of ip addresses or use of static ip addresses.
+
+Q. Can we use an API Gateway for service discovery as it already can act as a load balancer?
+A. No, because not only clients, but also Microservices can call another Microservice. For example, “billing microservice” may need to call “product microservice”.
+
+The solution to discover services in Microservices is using a service discovery register, which is a database of all microservice names, host ip address & port number. A service discovery is a pattern used to discover network ip addresses of all the microservices.
+
+Q10. What is service discovery in Microservices?
+A10. Service discovery is how applications (E.g. Web & Mobile) and Microservices locate each other on a network. Service discovery is the first piece of infrastructure you must adopt when moving to Microservices.
+
+
+service Discovery
+
+Service discovery implementations include:
+
+1) A central server (E.g. Eureka by Netflix) that maintain a global view of addresses and
+
+2) clients that connect to the central server to update and retrieve addresses.
+
+Microservice Discovery Service
+Microservice Discovery Service
+
+Approach 1: If you use your own service
+
+Each microservice is responsible for registering their service discovery details with a service registry when a new service host is added or an ip address/port is changed. Each service is also responsible for sending heart-beat messages to the service registry at a regular interval say every minute or 20 seconds. If no heartbeat message is received that particular IP address/port will be removed from the registry.
+
+Approach 2: If you use a third-party service
+
+The third-paty service is responsible for requesting microservices for the ip addresses/port. How will the service registry know whom to ask? Service registry will be listening to the events of the distributed cluster scaling up & down. It also does a periodic check to ensure if the services are up or down.
+
+There are multiple approaches available for Service Discovery:
+
+1) DNS-based service discovery systems – E.g. AWS Route 53
+
+2) Use an existing strongly consistent key value datastore such as Apache Zookeeper or etcd.
+
+3) Specialised service discovery solution such as Netflix Eureka.
+
+Q10. What are the key tasks of a service discovery?
+A10. A service discovery system performs the following tasks:
+
+1) Clients must be able to connect to discover the services. A service resolution is a process of returning the physical network location of microsservice. A good service discovery system implements several features like caching, failover, and load balancing in its service resolution logic.
+
+2) Allow registration & unregistration of services.
+
+3) Initiate periodical heartbeat messages to other services that the service is alive and running. Heartbeats should be sent asynchronously to minimise any performance impact on the running service.
+
+Learn more at Spring Cloud with Eureka Discovery Server Tutorial
+
+Q11. What is Circuit-Breaker pattern in Microservices?
+A11. The circuit breaker pattern allows you to build a fault tolerant and resilient system that can survive gracefully when key services are either unavailable or have high latency.
+
+Microservice Circuit breaker pattern 
+Microservice Circuit breaker pattern
+
+It is wrapper function that tracks failures. The circuit breaker has 3 distinct states, Closed, Open, and Half-Open.
+
+When everything is normal, the circuit breaker remains in the closed state and all calls pass through to the services. When the number of failures exceeds a predetermined threshold the breaker trips, and it goes into the Open state.
+
+After a timeout period, the circuit switches to a half-open state to test if the underlying problem still exists. If a single call fails in this half-open state, the breaker is once again tripped. If it succeeds, the circuit breaker resets back to the normal closed state.
+
+Learn more at Spring Cloud with Resilience4j CircuitBreaker.
+
+Q12. What is Microservices Pact?
+A12. With Microservices it is crucial to verify integration with other services to ensure that the services aren’t broken. You want to do this as early as possible and you don’t want to to replicate the complex production environment for this.
+
+Traditionally this was done via end-to-end tests. As complexity of your systems grow – the less value end-to-end tests bring. The sheer number of dependencies lead to multiple false negatives and excessively long execution times.
+
+Q. How do you allow each service team to iterate independently but still preserve the overall health of your system?
+A. The answer is Consumer-Driven Contract (i.e. CDC) testing, which is based on a service evolution pattern. Consumer-Driven Contracts are all about service-oriented relationship among services, which means instead of a provider dictating what the interface and service level will be and expecting the consumers to adapt, now the consumers lead by dictating what it expects the provider to deliver and the provider has to do the checking. It’s about shifting the responsibility for the integration to the providing side.
+
+Consumer-Driven Contract is important for the microservices to evolve, hence contract testing frameworks like Pact and Spring Cloud Contract evolved.
+
+Q. How does the Pact framework work?
+A. Step 1: The consumer of a service write a test, which interacts with the provider. Based on this test definition Pact creates and spins up a provider stub against which the test executes to create a number of JSON files, which are the contracts.
+
+Step 2: These JSON files are now passed on to the provider service. This can be done by committing them to a shared git repository.
+
+Step 3: Once the contract gets updated, the provider has to test if it still obeys it. Provider runs its own verification tests against its live service, using these shared pact files. If the tests pass, good to go. Otherwise resolve the contract breach with the consumer team.
+
+
+Arulkumaran
+Mechanical Engineer to self-taught Java engineer within 2 years & a freelancer within 3 years. Freelancing since 2003. Preparation empowered me to attend 190+ job interviews & choose from 150+ job offers with  sought-after contract rates. Author of the book “Java/J2EE job interview companion“, which sold 35K+ copies & superseded by this site with1900+ registered users.  Amazon.com profile | Reviews | LinkedIn | LinkedIn Group | YouTube
+
+Contact us: java-interview@hotmail.com
+
+‹ 10 Spark SQL Interview Q&As7 Apache Kafka architecture interview Q&As ›
+
+
+150+ Coding Q&As
+Are you going places with “aha” moments?
+Answers are detailed enough with code, diagrams, tutorials & videos to talk the talk in job interviews & to walk the walk as a well rounded professional who gets things done with confidence. The Q&As approach on a wide range of topics that you must know as a seasoned Java or Big Data engineer will help you fast-track your career & go places within 2 years. Reviews | Why | What. Mobile friendly to learn on the go without feeling stagnated.
+Disclaimer
+The contents in this Java-Success are copyrighted and from EmpoweringTech pty ltd. The EmpoweringTech pty ltd has the right to correct or enhance the current content without any prior notice. These are general advice only, and one needs to take his/her own circumstances into consideration. The EmpoweringTech pty ltd will not be held liable for any damages caused or alleged to be caused either directly or indirectly by these materials and resources. Any trademarked names or labels used in this blog remain the property of their respective trademark owners. Links to external sites do not imply endorsement of the linked-to sites. Privacy Policy
+© 2021 Java-success.com 2020

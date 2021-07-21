@@ -1,0 +1,212 @@
+↓ SKIP TO MAIN CONTENT
+800+ Q&As Menu Logout Contact
+Java-Success.com
+800+ Java & Big Data interview Q&As with code, diagrams & key areas to FAST-TRACK
+Search for:
+search here …
+ 
+Home
+About
+Your - Career
+Your - Resume
+800+ Job Interview Q&As
+Membership
+Home › Java-Success.com › Quick Java Prep › 100+ Architect Interview FAQs › Architecture - Microservices ›
+7 Apache Kafka architecture interview Q&As
+Posted on November 30, 2019
+Apache Kafka is used in Micro Services Architecture (i.e. MSA) to Big Data & Low Latency application architectures.
+
+Q1. What is Apache Kafka?
+A1. Apache Kafka is a distributed messaging broker. The purpose of the Kafka project is to provide a unified, high-throughput, and low latency system platform for real-time data processing. Kafka delivers the following three key functions:
+
+1) Publish/Subscribe paradigm: as Kafka publishes & subscribes to streaming data similar to other traditional messaging systems like Active MQ, Rabbit MQ, Websphere MQ, etc.
+
+2) Processing: as Kafka compiles a stream processing application and responds to real-time events.
+
+3) Storage: as Kafka securely stores streaming data in a distributed and fault-tolerant cluster.
+
+Q. How does Kafka differ from the other traditional messaging systems like Active MQ or Rabbit MQ?
+A. Apache Kafka is used as streaming platform, which entails messaging + distributed storage + processing of data. Kafka can be used as a traditional messaging system, but the reverse is not true.
+
+1) Publish-Subscribe paradigm: In Kafka there is no concept of Queue and hence no send or receive for putting/getting messages from the queue. Publish-subscribe is the only paradigm available as a messaging model.
+
+2) Message persistence: In traditional messaging systems once a message is read it is removed from the storage and is no longer available. Kafka retains the messages even after all the subscribers have read the message. The retention period is a configurable parameter.
+
+3) Topic partitioning Kafka has implemented the topics as partitioned logs. A partition is an ordered, immutable sequence of messages that is continually appended to. A partition is also known as a commit log.
+
+
+Kafka – Topic Partitioning (Source: Dataflair)
+
+4) Message sequencing: In traditional messaging systems there is no guarantee that the messages will be received in a sequence in which they are sent. Also, the messages can only be read First In First Out (FIFO)
+
+In Kafka the sequence is maintained at a partition level. In other words if the topic is configured with a single partition then the messages are received in the same order that they were sent in. The consumer of the messages in Kafka issues a fetch request to the broker leading the partition it wants to consume. This means messages can be fetched by specifying the offset from which the message in the log is read from.
+
+
+Kafka – Commit log offsets
+
+5) Fault-tolerance & high availability: In Kafka partitions for the same topic are distributed across multiple brokers in the cluster to give fault tolerance & high availability.
+
+Partitions are replicated across multiple servers, and this is a configurable replication parameter.
+
+
+Kafka – Partition Replication
+
+Each Partition has one server as a leader and a number of servers as followers. Each Server acts a leader for some of its partitions and as a follower for some other. This is managed via Apache Zookeeper.
+
+Kafka chooses one broker partition’s replica as leader using ZooKeeper. A follower that is in-sync is called an ISR (in-sync replica). If a partition leader fails, Kafka chooses a new ISR as the new leader.
+
+6) Load balancing: as Kafka nodes publish the metadata telling the producer which servers are alive in the cluster, where the leader for the partitions is, and allows the client to send message to the appropriate server (and partition) thus distributing the message load across the cluster.
+
+Learn more: Getting started with Apache Kafka tutorial
+
+Q2. Where is Apache Kafka used?
+A2. It is used in event driven architectures from Micro services to Big Data & low latency applications.
+
+1. Micro Services
+The diagram depicts how to coordinate a set of decoupled and independent services on Apache Kafka message broker as a scalable, highly available, and fault-tolerant asynchronous communication backbone. Use in scenarios where
+
+1) You have a large number of Micro Services that need to communicate asynchronously.
+
+2) You want your Micro Services to be decoupled and independently maintained.
+
+3) You have one or more producers that produce messages for many consumers.
+
+
+Micro Services – Event Driven (Kafka)
+
+2. Big Data, streaming Data Warehousing & reporting
+It is used in Kappa architecture where batch processing is removed. The data is simply fed through the streaming system (E.g. Apache Kafka) quickly. For example, data can be streamed through Spark streaming into HDFS as append only & immutable in Avro or Parquet format. This organized data will be fed through NoSQL (i.e key/value pair) databases like HBase to serve via queries.
+
+Kappa data architecture
+Kappa data architecture
+
+This architecture finds its applications in real-time processing of distinct events. Kappa architecture can be used for database migrations & reorganisations without the need for the batch processing via ETLs, detection of anomalies (e.g. fraud detection), etc.
+
+
+Apache Kafka – Kappa Architecture (Source: https://www.cloudywithachanceofbigdata.com/the-streaming-data-warehouse-kappa-architecture-and-data-warehousing-re-imagined/)
+
+Q3. What do you understand by the term “data is presented to Kafka as stream“?
+A3. This means either the Data is acquired from source systems in real time or as a scheduled extract process, the data is presented to Kafka as a stream.
+
+Q4. What is Kafka Connect?
+A4. Kafka Connect is a tool for reliably streaming data at scale between Apache Kafka and other data systems. You can quickly define connectors that move large volume of data in and out of Kafka. Kafka Connect can ingest entire databases or collect metrics from all your application servers into its topics, making the data available for stream processing with low latency. An export connector can deliver data from Kafka topics into secondary indexes like Elasticsearch or into batch systems such as HDFS or AWS S3 bucket for offline analysis.
+
+The Kafka connect integrates well with the Confluent Avro Schema Registry, which provides a systematic contract with source systems which also serves as a data dictionary for consumers supporting schema evolution with backward and forward compatibility.
+
+Q5. What is Kafka Stream Windowing?
+A5. Kafka Stream Windowing lets you control how to group records that have the same key for stateful operations such as aggregations or joins into so-called windows. Windows are tracked per record key.
+
+Data can be retained on the Kafka platform for a designated period of time (E.g. days, weeks or months) where it is available for applications and processes to consume. The processes can be data summarisation or sliding window operations for reporting or notification, or data integration or data mart building processes which sink data to other relational (E.g. MySQL, Hive, Impala, Snowflake, Amazon Redshift, etc) or non relational (E.g. HBase, HDFS, AWS S3) systems.
+
+Real-time applications can be built using the KStreams API and KSQL. You can use these to sample streaming data or to perform windowed processing operations on streams. For example, Spark streaming with Spark MLlib for machine learning.
+
+Q6. What is a Consumer Group in Kafka?
+A6. Consumers read from any single partition, allowing you to scale throughput of message consumption in a similar fashion to message production. Consumers can also be organised into consumer groups for a given topic where each consumer within the group reads from a unique partition and the group as a whole consumes all messages from the entire topic.
+
+
+Kafka – Consumer Group
+
+Q7. What are the different levels of acknowledgements & consistencies provided by Kafka?
+A7.
+
+Producer Consistencies: On each message the producer
+
+1) wait for all in sync replicas (i.e. ISRs) to acknowledge the message.
+
+2) wait for only the leader to acknowledge the message.
+
+3) do not wait for acknowledgement.
+
+Each of the above approach has a trade-off between consistency and throughput. The choice is based on what is more important.
+
+Consumer Consistencies: The consumer
+
+1) receive each message at most once.
+
+2) receive each message at least once.
+
+3) receive each message exactly once.
+
+Most Kafka consumer applications choose “least once delivery” as it offers the best trade-off between throughput and correctness. The onus is on the downstream systems to handle duplicate messages.
+
+
+Arulkumaran
+Mechanical Engineer to self-taught Java engineer within 2 years & a freelancer within 3 years. Freelancing since 2003. Preparation empowered me to attend 190+ job interviews & choose from 150+ job offers with  sought-after contract rates. Author of the book “Java/J2EE job interview companion“, which sold 35K+ copies & superseded by this site with1900+ registered users.  Amazon.com profile | Reviews | LinkedIn | LinkedIn Group | YouTube
+
+Contact us: java-interview@hotmail.com
+
+‹ 10+ Key Microservices Interview Questions AnsweredSpring Cloud Microservices interview Q&As ›
+
+300+ Java FAQs to Fast-track
+250+ Must know Java FAQs
+FAQs - Prepared?
+FAQs - Ice Breaker
+FAQs - Core Java
+FAQs - JEE
+FAQs - Web Services
+FAQs - AWS
+FAQs - Microservices
+FAQs - Architecture
+FAQs - Hibernate
+FAQs - Spring
+FAQs - Key Areas
+FAQs - OOP & FP
+FAQs - Code Quality
+FAQs - UML
+FAQs - SQL
+FAQs - RDBMS
+FAQs - Maven
+FAQs - JSON & XML
+FAQs - Unix
+FAQs - Regex
+FAQs - DevOps
+FAQs - JMeter
+FAQs - GIT
+16+ Tech Key Areas Q&As
+100+ Architect Interview FAQs
+Architecture - Patterns
+Architecture - How to
+Architecture - AWS
+Architecture - Distributed
+Architecture - Microservices
+Architecture - QoS
+Architecture - ERD
+Architecture - ETL
+Architecture - Low Latency
+Architecture - UML
+40+ Code Quality - Q&As
+300+ Big Data Engineer FAQs
+300+ Big Data Interview FAQs
+Big Data - Data Warehouse
+Big Data - Overview
+Big Data - HDFS
+Big Data - Kafka
+Big Data - SQL
+Big Data - MapReduce
+Big Data - Hive
+Big Data - Data Science
+Big Data - Impala
+Big Data - AWS
+Big Data - Apache Spark
+Big Data - Apache Spark SQL
+Big Data - Apache Spark streaming
+Big Data - NoSQL
+Big Data - Sqoop, Flume & Nifi
+Big Data - security
+Big Data - Yarn, Zookeeper
+Big Data - Governance
+140+ Scala Interview FAQs
+80+ Big Data Tutorials
+80+ Python FAQs
+800+ Java Interview Q&As
+300+ Core Java Interview Q&As
+300+ JEE Interview Q&As
+80+ Spring & Hibernate Q&As
+80+ Companion Technologies
+Tutorials Java, JEE, Spring
+150+ Coding Q&As
+Are you going places with “aha” moments?
+Answers are detailed enough with code, diagrams, tutorials & videos to talk the talk in job interviews & to walk the walk as a well rounded professional who gets things done with confidence. The Q&As approach on a wide range of topics that you must know as a seasoned Java or Big Data engineer will help you fast-track your career & go places within 2 years. Reviews | Why | What. Mobile friendly to learn on the go without feeling stagnated.
+Disclaimer
+The contents in this Java-Success are copyrighted and from EmpoweringTech pty ltd. The EmpoweringTech pty ltd has the right to correct or enhance the current content without any prior notice. These are general advice only, and one needs to take his/her own circumstances into consideration. The EmpoweringTech pty ltd will not be held liable for any damages caused or alleged to be caused either directly or indirectly by these materials and resources. Any trademarked names or labels used in this blog remain the property of their respective trademark owners. Links to external sites do not imply endorsement of the linked-to sites. Privacy Policy
+© 2021 Java-success.com 2020
